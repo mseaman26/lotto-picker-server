@@ -1,0 +1,49 @@
+# Python
+*.py[cod]
+__pycache__/
+*.so
+
+# Django
+*.log
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+*.pot
+*.pyc
+
+# Virtual Environment
+venv/
+env/
+.env
+.venv/
+ENV/
+ENVIRONMENT/
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Coverage
+htmlcov/
+.coverage
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Other
+*.egg-info/
+dist/
+build/
