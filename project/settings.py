@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
-import django_heroku
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-e!*$^h68-sw+6^#i)6c$2+wo8(rw$1ch#hp3#&3#0+(-bn5nq8'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-default-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,16 +83,34 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'django_lotto_picker_db',  # or your desired database name
-        'USER': 'postgres',  # or your desired user
-        'PASSWORD': '',      # leave it blank if no password
-        'HOST': 'localhost',
-        'PORT': '5432',
+ENVIRONMENT = os.getenv('DJANGO_ENV', 'development')  # Default to development if not set
+print('environment: ', ENVIRONMENT)
+if ENVIRONMENT == 'production':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('RENDER_DATABASE_NAME'),  # Set these in Render's environment variables
+            'USER': os.getenv('RENDER_DATABASE_USER'),
+            'PASSWORD': os.getenv('RENDER_DATABASE_PASSWORD'),
+            'HOST': os.getenv('RENDER_DATABASE_HOST'),
+            'PORT': os.getenv('RENDER_DATABASE_PORT', '5432'),  # Default to 5432
+        }
     }
-}
+else:
+    print('local db')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'django_lotto_picker_db',  # Your local database name
+            'USER': 'postgres',  # Your local PostgreSQL user
+            'PASSWORD': '',  # Your local PostgreSQL password (if any)
+            'HOST': 'localhost',
+            'PORT': '5432',  # Default PostgreSQL port
+            'OPTIONS': {
+                'sslmode': 'disable',  # Disable SSL for local development
+            },
+        }
+    }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -159,5 +178,3 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-django_heroku.settings(locals())
